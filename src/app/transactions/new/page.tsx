@@ -2,10 +2,10 @@ import { redirect } from 'next/navigation';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/server/auth/auth-options";
 import { PageContainer } from '@/components/layout/page-container';
-import { FinancialSummary } from '@/components/reports/financial-summary';
-import { TransactionList } from '@/components/transactions/transaction-list';
+import { TransactionForm } from '@/components/transactions/transaction-form';
+import { prisma } from '@/server/db/client';
 
-export default async function Home() {
+export default async function NewTransactionPage() {
   const session = await getServerSession(authOptions);
   
   // Redirect to sign in if not authenticated
@@ -13,13 +13,14 @@ export default async function Home() {
     redirect('/api/auth/signin');
   }
   
+  // Check if user is admin
+  if (session.user.role !== 'ADMIN') {
+    redirect('/transactions');
+  }
+  
   return (
-    <PageContainer title="Dashboard">
-      <div className="space-y-8">
-        <FinancialSummary />
-        
-        <TransactionList />
-      </div>
+    <PageContainer title="New Transaction">
+      <TransactionForm mode="create" />
     </PageContainer>
   );
 }

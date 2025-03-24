@@ -2,10 +2,9 @@ import { redirect } from 'next/navigation';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/server/auth/auth-options";
 import { PageContainer } from '@/components/layout/page-container';
-import { FinancialSummary } from '@/components/reports/financial-summary';
 import { TransactionList } from '@/components/transactions/transaction-list';
 
-export default async function Home() {
+export default async function TransactionsPage() {
   const session = await getServerSession(authOptions);
   
   // Redirect to sign in if not authenticated
@@ -14,12 +13,8 @@ export default async function Home() {
   }
   
   return (
-    <PageContainer title="Dashboard">
-      <div className="space-y-8">
-        <FinancialSummary />
-        
-        <TransactionList />
-      </div>
+    <PageContainer title="Transactions">
+      <TransactionList />
     </PageContainer>
   );
 }
