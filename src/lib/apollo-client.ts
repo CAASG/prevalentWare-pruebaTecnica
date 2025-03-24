@@ -43,8 +43,7 @@ export const createApolloClient = () => {
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {
-        fetchPolicy: 'cache-and-network',
-        retry: 1, // Only retry once for failed requests
+        fetchPolicy: 'cache-and-network'
       },
     },
   });
