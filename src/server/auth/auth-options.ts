@@ -34,18 +34,11 @@ export const authOptions: AuthOptions = {
   },
   callbacks: {
     // Updated session callback for JWT strategy
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       if (session.user) {
         // With JWT strategy, user info comes from token
-        if (token) {
-          session.user.id = token.sub || '';
-          session.user.role = (token.role as Role) || 'USER';
-        }
-        // Fallback for backward compatibility
-        else if (user) {
-          session.user.id = user.id;
-          session.user.role = (user.role as Role) || 'USER';
-        }
+        session.user.id = token.sub || '';
+        session.user.role = (token.role as Role) || 'USER';
       }
       return session;
     },
@@ -61,8 +54,10 @@ export const authOptions: AuthOptions = {
     
     // Add a redirect callback for debugging
     async redirect({ url, baseUrl }) {
-      console.log('NextAuth Redirect:', { url, baseUrl });
-      return url.startsWith(baseUrl) ? url : baseUrl;
+      // Ensure the URL is relative to the base URL
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      if (url.startsWith(baseUrl)) return url;
+      return baseUrl;
     }
   },
   events: {
@@ -86,5 +81,5 @@ export const authOptions: AuthOptions = {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
-  debug: true, // Enable debugging
+  debug: process.env.NODE_ENV === 'development', // Enable debugging
 };

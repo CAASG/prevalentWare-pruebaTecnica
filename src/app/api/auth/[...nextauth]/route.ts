@@ -3,4 +3,6 @@ import { authOptions } from "@/server/auth/auth-options";
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+// Export the handler with proper error handling
+export const GET = handler;
+export const POST = handler;
