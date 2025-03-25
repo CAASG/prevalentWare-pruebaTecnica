@@ -4,27 +4,27 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
-// Configuration with connection handling
-const prismaClientSingleton = () => {
-  return new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-    errorFormat: 'pretty',
-    // Add connection pool configuration that is officially supported
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL,
-      },
+// Initialize Prisma Client with proper connection handling
+export const prisma = globalThis.prisma || new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL
     },
-  });
-};
+  },
+});
 
-// PrismaClient is attached to the `global` object in development to prevent
-// exhausting your database connection limit during hot reloads.
-export const prisma = globalThis.prisma ?? prismaClientSingleton();
-
+// Ensure proper connection handling
 if (process.env.NODE_ENV !== 'production') {
   globalThis.prisma = prisma;
 }
+
+// Handle connection errors gracefully
+prisma.$connect().catch((err) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.error('Failed to connect to the database:', err);
+  }
+});
 
 // Improved connection handling with retry logic
 const connectWithRetry = async (maxRetries = 3, delay = 1000) => {

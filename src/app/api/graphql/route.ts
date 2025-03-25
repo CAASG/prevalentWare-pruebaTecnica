@@ -7,25 +7,42 @@ import { authOptions } from '@/server/auth/auth-options';
 import type { Context } from '@/server/graphql/resolvers';
 import type { Role } from '@prisma/client';
 
-// Create Apollo Server
+// Create Apollo Server with proper error handling
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  formatError: (error) => {
+    // Log error in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('GraphQL Error:', error);
+    }
+    return error;
+  },
 });
 
 // Create the Next.js API handler with session context
 const handler = startServerAndCreateNextHandler(server, {
   context: async (req) => {
-    const session = await getServerSession(authOptions);
-    return {
-      session: session ? {
-        user: {
-          id: session.user?.id as string,
-          role: session.user?.role as Role
-        }
-      } : undefined
-    };
+    try {
+      const session = await getServerSession(authOptions);
+      return {
+        session: session ? {
+          user: {
+            id: session.user?.id as string,
+            role: session.user?.role as Role
+          }
+        } : undefined
+      };
+    } catch (error) {
+      // Log error in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Context Error:', error);
+      }
+      return { session: undefined };
+    }
   },
 });
 
-export { handler as GET, handler as POST };
+// Export the handler with proper error handling
+export const GET = handler;
+export const POST = handler;
