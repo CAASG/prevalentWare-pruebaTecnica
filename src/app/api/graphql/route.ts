@@ -48,4 +48,30 @@ const handler = startServerAndCreateNextHandler(server, {
 });
 
 // Export the handler with proper error handling
-export { handler as GET, handler as POST };
+export async function GET(request: Request) {
+  try {
+    return await handler(request);
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('GraphQL GET Error:', error);
+    }
+    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    return await handler(request);
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('GraphQL POST Error:', error);
+    }
+    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
