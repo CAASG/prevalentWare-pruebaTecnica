@@ -5,14 +5,11 @@ import { onError } from '@apollo/client/link/error';
 import { signIn } from 'next-auth/react';
 
 // Error handling link
-const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors) {
     for (const err of graphQLErrors) {
-      // Handle authentication errors
-      if (err.message.includes('Not authenticated') || err.message.includes('Not authorized')) {
-        // Attempt to refresh the session
-        return forward(operation);
-      }
+      // Only log authentication errors, don't try to handle them here
+      // as they will be handled by the useAuthSession hook
       console.error(
         `[GraphQL error]: Message: ${err.message}, Location: ${err.locations}, Path: ${err.path}`
       );
@@ -21,13 +18,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 
   if (networkError) {
     console.error(`[Network error]: ${networkError}`);
-    // Handle network errors that might be related to authentication
-    if (networkError.message.includes('401') || networkError.message.includes('403')) {
-      signIn('auth0', { callbackUrl: window.location.href });
-    }
   }
-
-  return forward(operation);
 });
 
 // HTTP connection to the API

@@ -1,16 +1,21 @@
-// src/server/auth/auth-options.ts
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Auth0Provider from "next-auth/providers/auth0";
 import { AuthOptions, DefaultSession } from "next-auth";
 import { prisma } from "../db/client";
+import { Role } from "@prisma/client";
 
-// Extend the session type to include user ID and role
+// Type declaration
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      role: string;
+      role: Role;
     } & DefaultSession["user"];
+  }
+  
+  // Add this to ensure proper typing for the user object
+  interface User {
+    role?: Role;
   }
 }
 
@@ -24,43 +29,62 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: {
-    strategy: "database",
+    strategy: "jwt", // Changed from "database" to "jwt"
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async session({ session, user }) {
+    // Updated session callback for JWT strategy
+    async session({ session, token, user }) {
       if (session.user) {
-        session.user.id = user.id;
-        
-        // Get user with role
-        const userWithRole = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { role: true }
-        });
-        
-        // Add role to session
-        session.user.role = userWithRole?.role || 'USER';
+        // With JWT strategy, user info comes from token
+        if (token) {
+          session.user.id = token.sub || '';
+          session.user.role = (token.role as Role) || 'USER';
+        }
+        // Fallback for backward compatibility
+        else if (user) {
+          session.user.id = user.id;
+          session.user.role = (user.role as Role) || 'USER';
+        }
       }
       return session;
     },
+    
+    // New callback for JWT strategy
+    async jwt({ token, user }) {
+      // When signing in, add user role to the token
+      if (user) {
+        token.role = user.role || 'USER';
+      }
+      return token;
+    },
+    
+    // Add a redirect callback for debugging
+    async redirect({ url, baseUrl }) {
+      console.log('NextAuth Redirect:', { url, baseUrl });
+      return url.startsWith(baseUrl) ? url : baseUrl;
+    }
   },
   events: {
     createUser: async ({ user }) => {
-      // Set initial role when a user is created
-      // For example, you might make specific emails admins
-      const isAdmin = user.email?.includes('admin@') || false;
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { 
-          role: isAdmin ? 'ADMIN' : 'USER',
-          // Ensure name is set (required in our schema)
-          name: user.name || user.email?.split('@')[0] || 'User'
-        }
-      });
+      try {
+        const isAdmin = user.email?.includes('admin@') || false;
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { 
+            role: isAdmin ? 'ADMIN' : 'USER',
+            name: user.name || user.email?.split('@')[0] || 'User'
+          }
+        });
+        console.log(`User created and role set: ${user.email}`);
+      } catch (error) {
+        console.error('Error in createUser event:', error);
+      }
     },
   },
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
+  debug: true, // Enable debugging
 };

@@ -10,6 +10,27 @@ import {
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+function formatDateForInput(dateValue: string | Date | undefined): string {
+  try {
+    if (!dateValue) {
+      return new Date().toISOString().split('T')[0];
+    }
+    
+    const date = typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      console.warn('Invalid date, using current date instead');
+      return new Date().toISOString().split('T')[0];
+    }
+    
+    return date.toISOString().split('T')[0];
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return new Date().toISOString().split('T')[0];
+  }
+}
+
 type TransactionFormProps = {
   mode: 'create' | 'edit';
   defaultValues?: {
@@ -27,11 +48,9 @@ export function TransactionForm({ mode, defaultValues = {} }: TransactionFormPro
   // Form state
   const [amount, setAmount] = useState(defaultValues.amount?.toString() || '');
   const [concept, setConcept] = useState(defaultValues.concept || '');
-  const [date, setDate] = useState(
-    defaultValues.date 
-      ? new Date(defaultValues.date).toISOString().split('T')[0]
-      : new Date().toISOString().split('T')[0]
-  );
+  // Updated date state with robust formatter
+  const [date, setDate] = useState(formatDateForInput(defaultValues.date));
+  
   const [type, setType] = useState<'INCOME' | 'EXPENSE'>(
     defaultValues.type || 'INCOME'
   );
@@ -80,6 +99,18 @@ export function TransactionForm({ mode, defaultValues = {} }: TransactionFormPro
       alert('Please enter a concept');
       return;
     }
+
+    let validDate = date;
+    try {
+      const dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) {
+        console.warn('Invalid date in submission, using current date');
+        validDate = new Date().toISOString().split('T')[0];
+      }
+    } catch (error) {
+      console.error('Error with date format:', error);
+      validDate = new Date().toISOString().split('T')[0];
+    }
     
     const variables = {
       amount: amountValue,
@@ -111,7 +142,7 @@ export function TransactionForm({ mode, defaultValues = {} }: TransactionFormPro
             id="type"
             value={type}
             onChange={(e) => setType(e.target.value as 'INCOME' | 'EXPENSE')}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-gray-500"
           >
             <option value="INCOME">Income</option>
             <option value="EXPENSE">Expense</option>
@@ -165,9 +196,9 @@ export function TransactionForm({ mode, defaultValues = {} }: TransactionFormPro
             type="date"
             id="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => setDate(formatDateForInput(e.target.value))}
             required
-            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-gray-500"
           />
         </div>
       </div>

@@ -1,4 +1,3 @@
-// src/components/users/user-edit-form.tsx
 'use client';
 
 import { useQuery, useMutation } from '@apollo/client';
@@ -73,7 +72,7 @@ export function UserEditForm({ userId }: UserEditFormProps) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-gray-600"
         />
       </div>
       
@@ -86,7 +85,7 @@ export function UserEditForm({ userId }: UserEditFormProps) {
           id="phone"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+          className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md text-gray-600"
         />
       </div>
       
@@ -98,7 +97,7 @@ export function UserEditForm({ userId }: UserEditFormProps) {
           id="role"
           value={role}
           onChange={(e) => setRole(e.target.value as 'USER' | 'ADMIN')}
-          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-gray-600"
         >
           <option value="USER">User</option>
           <option value="ADMIN">Admin</option>

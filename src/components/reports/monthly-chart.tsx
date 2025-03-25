@@ -48,7 +48,7 @@ export function MonthlyChart() {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-medium">Monthly Financial Overview</h2>
+        <h2 className="text-lg font-medium text-black">Monthly Financial Overview</h2>
         
         <div>
           <label htmlFor="year" className="mr-2 text-sm">

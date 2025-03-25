@@ -1,8 +1,8 @@
-// src/app/auth/signin/page.tsx
 import { PageContainer } from '@/components/layout/page-container';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/server/auth/auth-options";
 import { redirect } from 'next/navigation';
+import { SignInButton } from '@/components/auth/signin-button';
 
 export default async function SignInPage() {
   const session = await getServerSession(authOptions);
@@ -24,16 +24,7 @@ export default async function SignInPage() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
             <div className="mt-6">
-              <form className="space-y-6" action="/api/auth/signin/auth0" method="GET">
-                <div>
-                  <button
-                    type="submit"
-                    className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Sign in with Auth0
-                  </button>
-                </div>
-              </form>
+              <SignInButton />
             </div>
           </div>
         </div>

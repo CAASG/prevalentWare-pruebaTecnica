@@ -42,7 +42,7 @@ export function ExportReports() {
   
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
-      <h2 className="text-lg font-medium mb-4">Export Financial Reports</h2>
+      <h2 className="text-lg font-medium mb-4 text-black">Export Financial Reports</h2>
       
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -55,7 +55,7 @@ export function ExportReports() {
               id="startDate"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-400"
             />
           </div>
           
@@ -68,7 +68,7 @@ export function ExportReports() {
               id="endDate"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-400"
             />
           </div>
         </div>

@@ -44,7 +44,7 @@ export function TransactionList() {
   return (
     <div className="space-y-6">
       <div className="bg-white p-4 rounded-lg shadow-sm">
-        <h2 className="text-lg font-medium mb-4">Filters</h2>
+        <h2 className="text-lg font-medium mb-4 text-black">Filters</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -56,7 +56,7 @@ export function TransactionList() {
               onChange={(e) => handleFilterChange({ 
                 type: e.target.value ? e.target.value as 'INCOME' | 'EXPENSE' : null 
               })}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-400"
             >
               <option value="">All</option>
               <option value="INCOME">Income</option>
@@ -72,7 +72,7 @@ export function TransactionList() {
               type="date"
               value={filters.startDate || ''}
               onChange={(e) => handleFilterChange({ startDate: e.target.value || null })}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-400"
             />
           </div>
           
@@ -84,7 +84,7 @@ export function TransactionList() {
               type="date"
               value={filters.endDate || ''}
               onChange={(e) => handleFilterChange({ endDate: e.target.value || null })}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-400"
             />
           </div>
         </div>
@@ -114,7 +114,7 @@ export function TransactionList() {
         </div>
         
         {loading ? (
-          <div className="p-6 text-center">Loading transactions...</div>
+          <div className="p-6 text-center text-gray-500">Loading transactions...</div>
         ) : error ? (
           <div className="p-6 text-center text-red-500">{error.message}</div>
         ) : data?.transactions.length === 0 ? (
@@ -148,10 +148,10 @@ export function TransactionList() {
             <tbody className="bg-white divide-y divide-gray-200">
               {data.transactions.map((transaction: Transaction) => (
                 <tr key={transaction.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
                     {transaction.concept}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-500">
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: 'USD'

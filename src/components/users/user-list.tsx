@@ -23,7 +23,7 @@ export function UserList() {
       </div>
       
       {loading ? (
-        <div className="p-4 text-center">Loading users...</div>
+        <div className="p-4 text-center text-gray-500">Loading users...</div>
       ) : error ? (
         <div className="p-4 text-center text-red-500">{error.message}</div>
       ) : (
