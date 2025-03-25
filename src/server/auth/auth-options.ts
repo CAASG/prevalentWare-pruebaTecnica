@@ -29,39 +29,52 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt", // Changed from "database" to "jwt"
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
   },
   callbacks: {
     // Updated session callback for JWT strategy
     async session({ session, token }) {
-      if (session.user) {
-        // With JWT strategy, user info comes from token
-        session.user.id = token.sub || '';
-        session.user.role = (token.role as Role) || 'USER';
+      try {
+        if (session.user) {
+          session.user.id = token.sub || '';
+          session.user.role = (token.role as Role) || 'USER';
+        }
+        return session;
+      } catch (error) {
+        console.error('Session callback error:', error);
+        return session;
       }
-      return session;
     },
     
     // New callback for JWT strategy
-    async jwt({ token, user }) {
-      // When signing in, add user role to the token
-      if (user) {
-        token.role = user.role || 'USER';
+    async jwt({ token, user, account }) {
+      try {
+        if (user) {
+          token.role = user.role || 'USER';
+        }
+        return token;
+      } catch (error) {
+        console.error('JWT callback error:', error);
+        return token;
       }
-      return token;
     },
     
     // Add a redirect callback for debugging
     async redirect({ url, baseUrl }) {
-      // Ensure the URL is relative to the base URL
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
-      if (url.startsWith(baseUrl)) return url;
-      return baseUrl;
+      try {
+        if (url.startsWith('/')) return `${baseUrl}${url}`;
+        if (url.startsWith(baseUrl)) return url;
+        return baseUrl;
+      } catch (error) {
+        console.error('Redirect callback error:', error);
+        return baseUrl;
+      }
     }
   },
   events: {
-    createUser: async ({ user }) => {
+    async createUser({ user }) {
       try {
         const isAdmin = user.email?.includes('admin@') || false;
         await prisma.user.update({
@@ -82,4 +95,5 @@ export const authOptions: AuthOptions = {
     error: '/auth/error',
   },
   debug: process.env.NODE_ENV === 'development', // Enable debugging
+  secret: process.env.NEXTAUTH_SECRET,
 };

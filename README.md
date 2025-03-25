@@ -34,10 +34,38 @@ git clone https://github.com/yourusername/income-expense-management.git
 cd income-expense-management
 ```
 
-### 2. Install dependencies
+### 2. Install dependencies and set up the project
 
 ```bash
+# Install all dependencies
 npm install
+
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+
+# Seed the database with initial data (optional)
+npx prisma db seed
+```
+
+The project requires the following prerequisites:
+
+1. **Node.js and npm**
+   - Install Node.js version 18 or higher from [nodejs.org](https://nodejs.org/)
+   - npm comes bundled with Node.js
+
+2. **PostgreSQL Database**
+   - Install PostgreSQL from [postgresql.org](https://www.postgresql.org/download/)
+   - Or use a free Supabase account at [supabase.com](https://supabase.com)
+
+3. **Auth0 Account**
+   - Create a free account at [auth0.com](https://auth0.com)
+
+After installing the prerequisites and running the commands above, your project will be ready to run with:
+```bash
+npm run dev
 ```
 
 ### 3. Set up environment variables
