@@ -7,6 +7,10 @@ import { authOptions } from '@/server/auth/auth-options';
 import type { Context } from '@/server/graphql/resolvers';
 import type { Role } from '@prisma/client';
 
+// Add dynamic configuration to prevent static optimization issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Create Apollo Server with proper error handling
 const server = new ApolloServer({
   typeDefs,
@@ -44,5 +48,4 @@ const handler = startServerAndCreateNextHandler(server, {
 });
 
 // Export the handler with proper error handling
-export const GET = handler;
-export const POST = handler;
+export { handler as GET, handler as POST };
