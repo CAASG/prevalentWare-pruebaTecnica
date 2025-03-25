@@ -1,36 +1,171 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Income and Expense Management System
+
+A full-stack Next.js application for tracking and managing financial transactions with role-based access control.
+
+## Features
+
+- **Authentication** via Auth0
+- **Role-based access** with Admin and User roles
+- **Transaction management** for income and expenses
+- **Financial dashboard** with summary statistics and charts
+- **User management** for administrators
+- **Reporting functionality** with CSV export
+
+## Tech Stack
+
+- **Frontend**: Next.js 14 with App Router, React, Tailwind CSS
+- **API**: GraphQL with Apollo Server & Client
+- **Database**: PostgreSQL (Supabase)
+- **ORM**: Prisma
+- **Authentication**: Auth.js (NextAuth) with Auth0 provider
+
+## Prerequisites
+
+- Node.js 18+ and npm
+- PostgreSQL database (or Supabase account)
+- Auth0 account
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/income-expense-management.git
+cd income-expense-management
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Set up environment variables
+
+Create a `.env` file in the project root with the following variables:
+
+```
+# Database
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@[YOUR-HOST]:[PORT]/postgres"
+DIRECT_URL="postgresql://postgres:[YOUR-PASSWORD]@[YOUR-HOST]:[PORT]/postgres"
+
+# Auth0
+AUTH0_CLIENT_ID="your-auth0-client-id"
+AUTH0_CLIENT_SECRET="your-auth0-client-secret"
+AUTH0_ISSUER="https://your-auth0-domain.auth0.com"
+
+# NextAuth
+NEXTAUTH_SECRET="your-generated-secret"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+### 4. Configure Auth0
+
+1. Create a new application in Auth0 dashboard
+2. Configure the following URLs:
+   - **Allowed Callback URLs**: `http://localhost:3000/api/auth/callback/auth0`
+   - **Allowed Logout URLs**: `http://localhost:3000`
+   - **Allowed Web Origins**: `http://localhost:3000`
+3. Copy your Auth0 credentials to the `.env` file
+
+### 5. Set up the database
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations
+npx prisma migrate dev
+
+# Seed the database (optional)
+npx prisma db seed
+```
+
+### 6. Start the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Your application should now be running at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Schema
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application uses the following core models:
 
-## Learn More
+- **User**: Stores user information and roles (USER, ADMIN)
+- **Transaction**: Records income and expense entries with amount, concept, date, and type
 
-To learn more about Next.js, take a look at the following resources:
+## User Roles and Permissions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Admin Users
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Can view all financial data and transactions
+- Can create, edit, and delete transactions
+- Can manage user roles
+- Can access reporting features
+- Can see financial summaries and charts
 
-## Deploy on Vercel
+### Regular Users
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Can view all transactions (read-only)
+- Can see financial summaries and charts
+- Cannot modify any data
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment to Vercel
+
+### 1. Push your code to GitHub
+
+```bash
+git add .
+git commit -m "Ready for deployment"
+git push
+```
+
+### 2. Import your project in Vercel
+
+1. Create an account on [Vercel](https://vercel.com) if you don't have one
+2. Click "New Project" and import your GitHub repository
+3. Configure the project:
+   - Framework Preset: Next.js
+   - Build Command: `npm run build`
+   - Output Directory: Leave default
+   - Install Command: `npm install`
+
+### 3. Configure environment variables
+
+Add the same environment variables from your local `.env` file to Vercel's environment variables section, with these adjustments:
+
+- Update `NEXTAUTH_URL` to your Vercel deployment URL
+- Update Auth0 callback URLs in your Auth0 dashboard to include your Vercel deployment URL
+
+### 4. Deploy
+
+Click "Deploy" and wait for the build to complete.
+
+### 5. Update Auth0 Configuration
+
+After deployment, go back to your Auth0 Dashboard and add your Vercel deployment URLs:
+- **Allowed Callback URLs**: `https://your-vercel-app.vercel.app/api/auth/callback/auth0`
+- **Allowed Logout URLs**: `https://your-vercel-app.vercel.app`
+- **Allowed Web Origins**: `https://your-vercel-app.vercel.app`
+
+## Troubleshooting
+
+### Database connection issues
+
+If you encounter database connection errors, check:
+- Your database credentials in the `.env` file
+- Network access to your database (including firewall settings)
+- Proper formatting of the DATABASE_URL
+
+### Authentication issues
+
+If authentication isn't working:
+- Verify your Auth0 credentials
+- Check the callback URLs in your Auth0 dashboard
+- Ensure NEXTAUTH_URL is set correctly
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
