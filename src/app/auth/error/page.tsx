@@ -1,8 +1,10 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function ErrorPage() {
+// Create a client component that uses the hook
+function ErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   
@@ -17,5 +19,14 @@ export default function ErrorPage() {
         <a href="/" className="text-blue-600 hover:underline">Return to home page</a>
       </div>
     </div>
+  );
+}
+
+// Main page component with suspense boundary
+export default function ErrorPage() {
+  return (
+    <Suspense fallback={<div className="text-center mt-10">Loading error details...</div>}>
+      <ErrorContent />
+    </Suspense>
   );
 }
