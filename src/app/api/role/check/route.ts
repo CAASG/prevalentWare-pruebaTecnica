@@ -1,10 +1,12 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/server/auth/auth-options";
 
+// Add dynamic configuration to prevent static optimization issues
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET() {
+// Create a simple handler function
+const handler = async () => {
   try {
     const session = await getServerSession(authOptions);
     
@@ -29,4 +31,7 @@ export async function GET() {
       error: 'Internal Server Error'
     }, { status: 500 });
   }
-}
+};
+
+// Export the handler
+export { handler as GET };
