@@ -1,7 +1,9 @@
 import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
 import { authOptions } from "@/server/auth/auth-options";
 import { prisma } from "@/server/db/client";
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: Request) {
   try {
@@ -34,13 +36,11 @@ export async function GET(request: Request) {
       }
     }
     
-    // Fetch transactions with retry logic
-    const transactions = await prisma.$transaction(async (tx) => {
-      return tx.transaction.findMany({
-        where: filter,
-        orderBy: { date: 'desc' },
-        include: { user: true }
-      });
+    // Fetch transactions
+    const transactions = await prisma.transaction.findMany({
+      where: filter,
+      orderBy: { date: 'desc' },
+      include: { user: true }
     });
     
     // Create CSV content
@@ -49,23 +49,20 @@ export async function GET(request: Request) {
     transactions.forEach(transaction => {
       const type = transaction.type;
       const amount = transaction.amount.toFixed(2);
-      const concept = transaction.concept.replace(/,/g, ' '); // Remove commas to avoid CSV issues
+      const concept = transaction.concept.replace(/,/g, ' ');
       const date = transaction.date.toISOString().split('T')[0];
       const user = transaction.user.name.replace(/,/g, ' ');
       
       csvContent += `${type},${amount},"${concept}",${date},"${user}"\n`;
     });
     
-    // Set headers for CSV download
-    const headers = new Headers();
-    headers.set('Content-Type', 'text/csv');
-    headers.set('Content-Disposition', 'attachment; filename="financial-report.csv"');
-    
     return new Response(csvContent, {
-      headers,
+      headers: {
+        'Content-Type': 'text/csv',
+        'Content-Disposition': 'attachment; filename="financial-report.csv"'
+      }
     });
   } catch (error) {
-    // Log error in development
     if (process.env.NODE_ENV === 'development') {
       console.error('Error generating report:', error);
     }
