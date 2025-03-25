@@ -65,7 +65,10 @@ export async function GET(request: Request) {
       headers,
     });
   } catch (error) {
-    console.error('Error generating report:', error);
+    // Log error in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error generating report:', error);
+    }
     return new Response('Internal Server Error', { status: 500 });
   }
 }
